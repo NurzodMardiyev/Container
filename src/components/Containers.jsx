@@ -396,7 +396,7 @@ export default function Containers() {
     },
   ];
   return (
-    <div className="w-full bg-[#F3E0BF]  flex justify-center items-center h-[100vh]">
+    <div className="w-full bg-[#F3E0BF]  flex justify-center items-center h-[100%]">
       <Drawer
         title="Balansda saqlovchi tashkilot"
         onClose={onClose}
@@ -419,8 +419,8 @@ export default function Containers() {
         <Table columns={columns2} dataSource={data2} bordered />
       </Drawer>
       <div className="container md:max-w-6xl md:mx-auto  relative my-2 ">
-        <div className="flex justify-between w-full gap-3 z-20 relative">
-          <div className="w-1/4 h-[91px]  flex justify-start items-start  align-start border">
+        <div className="flex justify-between w-full gap-0 z-20 relative">
+          <div className="w-1/4 h-[91px]  flex justify-start items-start  align-start">
             <button
               className="btn-vertical flex-1 w-full text-3xl px-20 font-bold text-white justify-start items-center hover:scale-105 transition-transform duration-150"
               onClick={showDrawer1}
@@ -562,10 +562,10 @@ export default function Containers() {
           />
         </div>
         <div className="absolute top-[91px] left-[100px] z-0">
-          <span className="block w-[952px] h-[30px] bg-slate-400"></span>
+          <span className="block w-[902px] h-[30px] bg-slate-400"></span>
         </div>
         <div className="absolute bottom-[100px] left-[100px] z-0">
-          <span className="block w-[952px] h-[30px] bg-slate-400"></span>
+          <span className="block w-[902px] h-[30px] bg-slate-400"></span>
         </div>
         <div className="absolute bottom-[100px] left-[100px] z-0">
           <span className="block w-[30px] h-[630px] bg-slate-400"></span>
