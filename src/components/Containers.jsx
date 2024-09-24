@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import road_v from "../images/road.svg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-
 import { Drawer, Table } from "antd";
-
 import "../App.css";
 import { containerApi } from "../feature/Apies";
+import road_v from "../images/road.svg";
 
 export default function Containers() {
-  const [open, setOpen] = useState(false);
-  const [open1, setOpen1] = useState(false);
-  const [open2, setOpen2] = useState(false);
-  const [appealIdNumber, setAppealIdNumber] = useState();
+  const [openDrawer, setOpenDrawer] = useState(false); // open state for Drawer
+  const [activeTable, setActiveTable] = useState(null); // to manage active table
+  const [appealIdNumber, setAppealIdNumber] = useState(); // to store appeal count
 
   const queryClient = useQueryClient();
   const containerRequest = useMutation(containerApi.container, {
@@ -19,70 +16,36 @@ export default function Containers() {
       queryClient.invalidateQueries();
     },
   });
+
   const { data: dataAll } = useQuery(["container"], () =>
     containerApi.container()
   );
-  const showDrawer = (id) => {
-    setOpen(true);
+
+  // Showing drawer with dynamic table data
+  const showDrawer = (id, tableKey) => {
+    setOpenDrawer(true);
     containerRequest.mutate();
-    const appealId = dataAll?.filter((item) => (item.id === id ? item : ""));
+
+    const appealId = dataAll?.filter((item) => item.id === id);
     setAppealIdNumber(appealId[0]?.appeals_count);
+    setActiveTable(tableKey); // Set which table to show
   };
 
-  // console.log(dataAll);
   const onClose = () => {
-    setOpen(false);
-  };
-  const showDrawer1 = (id) => {
-    setOpen1(true);
-    containerRequest.mutate();
-    const appealId = dataAll?.filter((item) => (item.id === id ? item : ""));
-    setAppealIdNumber(appealId[0]?.appeals_count);
-  };
-  const onClose1 = () => {
-    setOpen1(false);
-  };
-  const showDrawer2 = (id) => {
-    setOpen2(true);
-    containerRequest.mutate();
-    const appealId = dataAll?.filter((item) => (item.id === id ? item : ""));
-    setAppealIdNumber(appealId[0]?.appeals_count);
-  };
-  const onClose2 = () => {
-    setOpen2(false);
+    setOpenDrawer(false);
+    setActiveTable(null); // Reset active table on close
   };
 
-  const sharedOnCell = () => {};
-
-  const columns = [
-    {
-      title: "No",
-      dataIndex: "key",
-      rowScope: "row",
-    },
-    {
-      title: "Xarajat Nomi",
-      dataIndex: "name",
-      onCell: sharedOnCell,
-    },
-    {
-      title: "Soni",
-      dataIndex: "much",
-      onCell: sharedOnCell,
-    },
-
-    {
-      title: "Narxi",
-      dataIndex: "price",
-      onCell: sharedOnCell,
-    },
-    {
-      title: "Summasi (ming so'mda)",
-      dataIndex: "overal",
-      onCell: sharedOnCell,
-    },
+  // Common columns for all tables
+  const commonColumns = [
+    { title: "No", dataIndex: "key", rowScope: "row" },
+    { title: "Xarajat Nomi", dataIndex: "name" },
+    { title: "Soni", dataIndex: "much" },
+    { title: "Narxi", dataIndex: "price" },
+    { title: "Summasi (ming so'mda)", dataIndex: "overal" },
   ];
-  const data = [
+
+  const data1 = [
     {
       key: "1",
       name: "Konteyner ta'miri holati",
@@ -211,35 +174,7 @@ export default function Containers() {
     },
   ];
 
-  const columns1 = [
-    {
-      title: "No",
-      dataIndex: "key",
-      rowScope: "row",
-    },
-    {
-      title: "Xarajat Nomi",
-      dataIndex: "name",
-      onCell: sharedOnCell,
-    },
-    {
-      title: "Soni",
-      dataIndex: "much",
-      onCell: sharedOnCell,
-    },
-
-    {
-      title: "Narxi",
-      dataIndex: "price",
-      onCell: sharedOnCell,
-    },
-    {
-      title: "Summasi (ming so'mda)",
-      dataIndex: "overal",
-      onCell: sharedOnCell,
-    },
-  ];
-  const data1 = [
+  const data2 = [
     {
       key: "1",
       name: "Konteyner ta'mir holatda",
@@ -347,35 +282,7 @@ export default function Containers() {
     },
   ];
 
-  const columns2 = [
-    {
-      title: "No",
-      dataIndex: "key",
-      rowScope: "row",
-    },
-    {
-      title: "Xarajat Nomi",
-      dataIndex: "name",
-      onCell: sharedOnCell,
-    },
-    {
-      title: "Soni",
-      dataIndex: "much",
-      onCell: sharedOnCell,
-    },
-
-    {
-      title: "Narxi",
-      dataIndex: "price",
-      onCell: sharedOnCell,
-    },
-    {
-      title: "Summasi (ming so'mda)",
-      dataIndex: "overal",
-      onCell: sharedOnCell,
-    },
-  ];
-  const data2 = [
+  const data3 = [
     {
       key: "1",
       name: "Tayyor konteyner sotib olish",
@@ -419,47 +326,37 @@ export default function Containers() {
       overal: "108500",
     },
   ];
+
+  const tableData = {
+    table1: data1,
+    table2: data2,
+    table3: data3,
+  };
   return (
     <div className="w-full bg-[#F3E0BF]  flex justify-center items-center h-[100%]">
       <Drawer
         title="Balansda saqlovchi tashkilot"
         onClose={onClose}
-        open={open}
+        open={openDrawer}
       >
         <p className="mb-4 mt-[-10px] text-[16px]">
           Mazkur konteyner uchun kelib tushgan arizalar soni:{" "}
           <span className="font-[600]">{appealIdNumber}</span> ta
         </p>
-        <Table columns={columns} dataSource={data} bordered />
-      </Drawer>
-      <Drawer
-        title="Balansda saqlovchi tashkilot"
-        onClose={onClose1}
-        open={open1}
-      >
-        <p className="mb-4 mt-[-10px] text-[16px]">
-          Mazkur konteyner uchun kelib tushgan arizalar soni:{" "}
-          <span className="font-[600]">{appealIdNumber}</span> ta
-        </p>
-        <Table columns={columns1} dataSource={data1} bordered />
-      </Drawer>
-      <Drawer
-        title="Balansda saqlovchi tashkilot"
-        onClose={onClose2}
-        open={open2}
-      >
-        <p className="mb-4 mt-[-10px] text-[16px]">
-          Mazkur konteyner uchun kelib tushgan arizalar soni:{" "}
-          <span className="font-[600]">{appealIdNumber}</span> ta
-        </p>
-        <Table columns={columns2} dataSource={data2} bordered />
+        {activeTable && (
+          <Table
+            columns={commonColumns}
+            dataSource={tableData[activeTable]}
+            bordered
+          />
+        )}
       </Drawer>
       <div className="container md:max-w-6xl md:mx-auto  relative my-2 ">
         <div className="flex justify-between w-full gap-0 z-20 relative">
           <div className="w-1/4 h-[91px]  flex justify-start items-start  align-start">
             <button
               className="btn-vertical flex-1 w-full text-3xl px-20 font-bold text-white justify-start items-center hover:scale-105 transition-transform duration-150"
-              onClick={() => showDrawer1(7)}
+              onClick={() => showDrawer(7, "table2")}
             >
               <span>7</span>
             </button>
@@ -467,7 +364,7 @@ export default function Containers() {
           <div className="w-1/4 h-[91px] flex justify-center items-center ">
             <button
               className="btn-vertical  text-3xl font-bold text-white col-span-3 justify-center items-center hover:scale-105 transition-transform duration-150"
-              onClick={() => showDrawer1(8)}
+              onClick={() => showDrawer(8, "table2")}
             >
               8
             </button>
@@ -475,7 +372,7 @@ export default function Containers() {
           <div className="w-1/4 h-[91px] flex justify-center items-center ">
             <button
               className="btn-vertical text-3xl font-bold text-white col-span-3 justify-center items-center hover:scale-105 transition-transform duration-150"
-              onClick={() => showDrawer1(9)}
+              onClick={() => showDrawer(9, "table2")}
             >
               9
             </button>
@@ -483,7 +380,7 @@ export default function Containers() {
           <div className="w-1/4 h-[91px] flex justify-center items-center ">
             <button
               className="btn-vertical  text-3xl font-bold text-white col-span-3 justify-center items-center hover:scale-105 transition-transform duration-150"
-              onClick={() => showDrawer1(10)}
+              onClick={() => showDrawer(10, "table2")}
             >
               10
             </button>
@@ -494,7 +391,7 @@ export default function Containers() {
           <div>
             <button
               className="btn-horizantal  w-[100px] h-[130px] text-white font-bold text-3xl flex justify-center items-center hover:scale-105 transition-transform duration-150"
-              onClick={() => showDrawer1(6)}
+              onClick={() => showDrawer(6, "table2")}
             >
               <span>6</span>
             </button>
@@ -502,7 +399,7 @@ export default function Containers() {
           <div>
             <button
               className="btn-horizantal  w-[100px] h-[130px] text-white font-bold text-3xl flex justify-center items-center hover:scale-105 transition-transform duration-150"
-              onClick={() => showDrawer1(11)}
+              onClick={() => showDrawer(11, "table2")}
             >
               <span>11</span>
             </button>
@@ -511,13 +408,13 @@ export default function Containers() {
         <div className="flex justify-between w-full my-2 z-20 relative">
           <button
             className="btn-horizantal w-[100px] h-[130px]  text-white font-bold text-3xl flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer1(5)}
+            onClick={() => showDrawer(5, "table2")}
           >
             5
           </button>
           <button
             className="btn-horizantal  w-[100px] h-[130px]  text-white font-bold text-3xl flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer2(12)}
+            onClick={() => showDrawer(12, "table3")}
           >
             12
           </button>
@@ -525,13 +422,13 @@ export default function Containers() {
         <div className="flex justify-between w-full my-2 z-20 relative">
           <button
             className="btn-horizantal w-[100px] h-[130px]  text-white font-bold text-3xl flex justify-center items-center hover:scale-105 transition-transform duration-150 "
-            onClick={() => showDrawer1(4)}
+            onClick={() => showDrawer(4, "table2")}
           >
             4
           </button>
           <button
             className="btn-horizantal  w-[100px] h-[130px]  text-white font-bold text-3xl flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer2(13)}
+            onClick={() => showDrawer(13, "table3")}
           >
             13
           </button>
@@ -539,13 +436,13 @@ export default function Containers() {
         <div className="flex justify-between w-full my-2 z-20 relative">
           <button
             className="btn-horizantal  w-[100px] h-[130px]  text-white font-bold text-3xl flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer1(3)}
+            onClick={() => showDrawer(3, "table2")}
           >
             3
           </button>
           <button
             className="btn-horizantal  w-[100px] h-[130px]  text-white font-bold text-3xl flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer2(14)}
+            onClick={() => showDrawer(14, "table3")}
           >
             14
           </button>
@@ -553,32 +450,32 @@ export default function Containers() {
         <div className="grid grid-cols-11 gap-3 justify-between w-full z-20 relative">
           <button
             className="btn-vertical px-18 col-span-2  text-3xl text-white font-bold py-8 flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer1(2)}
+            onClick={() => showDrawer(2, "table2")}
           >
             2
           </button>
           <button
             className="btn-vertical px-18 col-span-2  text-3xl text-white font-bold py-8 flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer(1)}
+            onClick={() => showDrawer(1, "table1")}
           >
             1
           </button>
           <button className="btn-vertica px-20 col-span-1  text-3xl text-white font-bold py-3 flex justify-center items-center"></button>
           <button
             className="btn-vertical px-18 col-span-2  text-3xl text-white font-bold py-8 flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer2(17)}
+            onClick={() => showDrawer(17, "table3")}
           >
             17
           </button>
           <button
             className="btn-vertical px-18 col-span-2  text-3xl text-white font-bold py-8 flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer2(16)}
+            onClick={() => showDrawer(16, "table3")}
           >
             16
           </button>
           <button
             className="btn-vertical px-18 col-span-2  text-3xl text-white font-bold py-8 flex justify-center items-center hover:scale-105 transition-transform duration-150"
-            onClick={() => showDrawer2(15)}
+            onClick={() => showDrawer(15, "table3")}
           >
             15
           </button>
