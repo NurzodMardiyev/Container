@@ -4,8 +4,7 @@ export const containerApi = {
   container: async () => {
     try {
       const { data } = await axios.get(
-        `http://container.lifesafety.uz/api/container/all/?format=json`,
-        {}
+        `https://container.pythonanywhere.com//api/container/all/?format=json`
       );
 
       return data;
